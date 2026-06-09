@@ -5,10 +5,10 @@ import com.example.testkmpapp.domain.models.NewsItemsList
 class NewsService(private val httpClient: NetworkClient) {
 
     suspend fun loadNews(): Result<NewsItemsList> {
-        return httpClient.request(URL)
+        return httpClient.request(PATH)
     }
 
     companion object {
-        private const val URL = "https://newsapi.org/v2/everything?q=apple"
+        private const val PATH = "everything?q=apple"
     }
 }
