@@ -8,7 +8,7 @@ class NewsService() {
         networkConfig = TODO(),
         httpClient = TODO()
     )
-    suspend fun loadNews(): NewsItemsList? {
+    suspend fun loadNews(): Result<NewsItemsList> {
         //TODO: change DI
         return httpClient.request(URL)
     }
