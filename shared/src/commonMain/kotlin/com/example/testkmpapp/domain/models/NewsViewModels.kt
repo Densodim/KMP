@@ -3,6 +3,7 @@ package com.example.testkmpapp.domain.models
 import com.example.testkmpapp.di.DI
 import com.example.testkmpapp.presentation.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 
 class NewsViewModels() : BaseViewModel() {
@@ -11,4 +12,9 @@ class NewsViewModels() : BaseViewModel() {
 
     private val service = DI.getNewsService()
 
+    fun loadNews(){
+        scope.launch {
+            
+        }
+    }
 }
