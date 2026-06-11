@@ -1,5 +1,6 @@
-- [x] Добавить `@Serializable` в `Source.kt`
-- [x] Добавить `@Serializable` в `NewsItem.kt`
-- [x] Добавить `@Serializable` в `NewsItemsList.kt`
-- [x] Исправить `NewsUseCase.kt` (опечатка и распаковка Result)
-- [x] Проверить отсутствие ошибок компиляции
+- [x] Обновить `libs.versions.toml`
+    - [x] Установить `ksp = "2.3.9"`
+    - [x] Добавить `kotlinx-metadata-jvm`
+- [x] Обновить `androidApp/build.gradle.kts`
+    - [x] Добавить зависимость `ksp(libs.kotlinx.metadata.jvm)`
+- [x] Проверить результат

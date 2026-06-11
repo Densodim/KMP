@@ -6,15 +6,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 
-class NewsViewModels() : BaseViewModel() {
-
+class NewsViewModels : BaseViewModel() {
+    private val useCase = DI.getNewsUseCase()
     val newFlow = MutableStateFlow<NewsItemsList?>(null)
 
-    private val service = DI.getNewsService()
-
-    fun loadNews(){
+    fun loadNews() {
         scope.launch {
-            
+            val result = useCase.invoke(Unit)
+
+            result.getOrNull()?.let {
+                newFlow.tryEmit(it)
+            }
         }
     }
 }

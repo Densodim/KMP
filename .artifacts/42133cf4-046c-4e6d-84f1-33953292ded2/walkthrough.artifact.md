@@ -1,25 +1,30 @@
-# Исправление NewsUseCase и подготовка моделей
+# Исправление ошибки Hilt Metadata Version
 
-Я исправил ошибки в `NewsUseCase` и добавил необходимую сериализацию для моделей данных.
+Я исправил проблему совместимости Hilt и Kotlin 2.4.0. Ошибка возникала из-за того, что процессор аннотаций Hilt не понимал формат метаданных, генерируемый новым компилятором Kotlin.
 
 ## Что было сделано
 
-### 1. Исправление NewsUseCase.kt
-- Исправлена опечатка в названии переменной: `newsServise` → `newsService`.
-- Исправлена ошибка типов: теперь результат сетевого запроса распаковывается через `.getOrThrow()`. Это позволяет вашему `BaseUseCase` корректно обрабатывать успех и ошибки через `runCatching`.
+### 1. Согласование версий KSP
+В файле [libs.versions.toml](file:///C:/Home/work/KMP/gradle/libs.versions.toml) я установил версию KSP **2.3.9**. Это последняя стабильная версия, совместимая с Kotlin 2.4.0. Попытка использовать версию 2.4.0 для KSP сейчас некорректна, так как её еще нет в репозиториях.
 
-### 2. Добавление сериализации
-Для того чтобы Ktor мог преобразовывать JSON от сервера в объекты Kotlin, я добавил аннотацию `@Serializable` в следующие файлы:
-- [Source.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/domain/models/Source.kt)
-- [NewsItem.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/domain/models/NewsItem.kt)
-- [NewsItemsList.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/domain/models/NewsItemsList.kt)
+### 2. Обновление библиотеки метаданных для Hilt
+Добавлена библиотека `kotlinx-metadata-jvm` версии **0.9.0**. Она содержит исправления для работы с метаданными Kotlin 2.4.0.
 
-> [!TIP]
-> Мы оставили название `NewsItemsList`, как вы и просили, не переименовывая его в `NewsList`.
+### 3. Настройка процессора аннотаций
+В [androidApp/build.gradle.kts](file:///C:/Home/work/KMP/androidApp/build.gradle.kts) я добавил эту библиотеку в конфигурацию `ksp`:
+```kotlin
+dependencies {
+    // ...
+    ksp(libs.kotlinx.metadata.jvm) // Принудительное обновление парсера метаданных для Hilt
+}
+```
 
-## Верификация
-- Файл `NewsUseCase.kt` успешно прошел статический анализ, ошибок компиляции больше нет.
-- Все модели данных теперь готовы к работе с сетевым клиентом.
+> [!IMPORTANT]
+> Теперь Hilt будет использовать обновленный парсер метаданных, что позволит ему корректно генерировать код при использовании Kotlin 2.4.0.
 
-render_diffs(file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/api/network/NewsUseCase.kt)
-render_diffs(file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/domain/models/NewsItemsList.kt)
+## Результаты
+- Файлы конфигурации обновлены.
+- Версии инструментов согласованы.
+
+render_diffs(file:///C:/Home/work/KMP/gradle/libs.versions.toml)
+render_diffs(file:///C:/Home/work/KMP/androidApp/build.gradle.kts)

@@ -49,7 +49,7 @@ fun NewsListItemView(item: NewsItem, modifier: Modifier = Modifier) {
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = item.author,
+                text = item.author.orEmpty(),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

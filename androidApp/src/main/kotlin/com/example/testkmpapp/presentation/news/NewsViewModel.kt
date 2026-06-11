@@ -9,13 +9,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class NewsViewModel : ViewModel() {
-    private val newsService = DI.getNewsService()
+    private val newsUseCase = DI.getNewsUseCase()
 
     private val _news = MutableStateFlow<List<NewsItem>>(emptyList())
     val news: StateFlow<List<NewsItem>> = _news
 
     fun fetchData() = viewModelScope.launch {
-        val result = newsService.loadNews()
-        result.onSuccess { _news.value = it.articles }
+        val result = newsUseCase.invoke(Unit)
+        result.onSuccess {
+            _news.value = it?.articles.orEmpty()
+        }
     }
 }
