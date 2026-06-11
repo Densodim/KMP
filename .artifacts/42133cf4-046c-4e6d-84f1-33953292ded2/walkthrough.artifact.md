@@ -1,35 +1,22 @@
-# Интеграция Kotlin Flow в iOS через Observer завершена
+# Исправление ViewModel после перехода на Lifecycle
 
-Я доработал инфраструктуру и логику на стороне iOS, чтобы приложение могло получать поток данных (Flow) из Shared-модуля.
+Я исправил ошибки, возникшие при переходе на библиотеку `androidx.lifecycle` и использовании `viewModelScope`.
 
 ## Что было сделано
 
-### 1. Реализация Observer (FlowCollector)
-В файле [Observer.swift](file:///C:/Home/work/KMP/iosApp/iosApp/presentation/news/Observer.swift) я завершил реализацию моста между Kotlin и Swift.
-- Класс теперь корректно наследует `Kotlinx_coroutines_coreFlowCollector`.
-- Метод `emit` вызывает Swift-callback при получении данных и уведомляет Kotlin о завершении обработки через `completionHandler`.
+### 1. Очистка BaseViewModel (Shared)
+В файле [BaseViewModel.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/presentation/BaseViewModel.kt) я удалил ручной вызов `scope.cancel()`.
+- **Почему**: `viewModelScope` из библиотеки Lifecycle отменяется автоматически, когда ViewModel очищается. Ручная отмена больше не требуется.
 
-### 2. Доработка NewListVM.swift
-Класс [NewListVM.swift](file:///C:/Home/work/KMP/iosApp/iosApp/presentation/news/NewListVM.swift) теперь полностью функционален:
-- Создан экземпляр общей `NewsViewModels` из Kotlin.
-- Реализована ленивая инициализация `itemsCollector`, который при получении данных обновляет массив `@Published var news` в главном потоке.
-- Метод `loadNews` теперь запускает `Task`, который вызывает `vm.newFlow.collect(collector: itemsCollector)`, устанавливая постоянную связь с данными.
+### 2. Исправление NewsViewModel (Android)
+В файле [NewsViewModel.kt](file:///C:/Home/work/KMP/androidApp/src/main/kotlin/com/example/testkmpapp/presentation/news/NewsViewModel.kt) устранены следующие проблемы:
+- **Удалена ошибочная инициализация**: Удалена переменная `useCase`, которая создавалась через `NewsUseCase()` без параметров (что приводило к ошибке компиляции). Теперь используется `newsUseCase` из `DI`.
+- **Исправлен тип данных**: В методе `loadNews` теперь правильно извлекается список статей из объекта `NewsItemsList` (`it?.articles.orEmpty()`) перед обновлением потока `_news`.
+- **Использование viewModelScope**: Методы `fetchData` и `loadNews` теперь единообразно используют встроенный `viewModelScope`.
 
-### 3. Обновление UI
-- **[NewsListView.swift](file:///C:/Home/work/KMP/iosApp/iosApp/presentation/news/NewsListView.swift)**: Переведен на работу с новой `NewListVM`. Добавлена обработка состояний загрузки и пустого списка.
-- **[NewsItemRow.swift](file:///C:/Home/work/KMP/iosApp/iosApp/presentation/news/NewsItemRow.swift)**: Исправлена обработка опциональных полей (после того как мы сделали их `nullable` в Kotlin для надежности). Поле `description` в Swift теперь используется как `description_`.
+## Результаты
+- Ошибки компиляции в обоих модулях устранены.
+- Код теперь полностью соответствует правилам работы с современным `androidx.lifecycle`.
 
-## Как это работает
-1. Когда экран появляется, вызывается `viewModel.loadNews()`.
-2. Код в Swift подписывается на `Flow` из Kotlin.
-3. Код в Kotlin (`Shared`) делает сетевой запрос и отправляет результат в `Flow`.
-4. `Observer` на стороне iOS ловит этот результат и передает его в `NewListVM`.
-5. SwiftUI автоматически перерисовывает экран, так как массив `news` помечен как `@Published`.
-
-> [!TIP]
-> Использование `Observer` напрямую — это классический и надежный способ работы с реактивными потоками в Kotlin Multiplatform без использования сторонних Swift-библиотек.
-
-render_diffs(file:///C:/Home/work/KMP/iosApp/iosApp/presentation/news/Observer.swift)
-render_diffs(file:///C:/Home/work/KMP/iosApp/iosApp/presentation/news/NewListVM.swift)
-render_diffs(file:///C:/Home/work/KMP/iosApp/iosApp/presentation/news/NewsListView.swift)
-render_diffs(file:///C:/Home/work/KMP/iosApp/iosApp/presentation/news/NewsItemRow.swift)
+render_diffs(file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/presentation/BaseViewModel.kt)
+render_diffs(file:///C:/Home/work/KMP/androidApp/src/main/kotlin/com/example/testkmpapp/presentation/news/NewsViewModel.kt)

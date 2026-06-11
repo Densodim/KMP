@@ -20,4 +20,11 @@ class NewsViewModel : ViewModel() {
             _news.value = it?.articles.orEmpty()
         }
     }
+
+    fun loadNews() = viewModelScope.launch {
+        val result = newsUseCase.invoke(Unit)
+        result.onSuccess {
+            _news.value = it?.articles.orEmpty()
+        }
+    }
 }
