@@ -1,46 +1,32 @@
-# Рефакторинг на UseCase и исправление UI
+# Исправление проблемы пустого экрана (Сетевые запросы и модели)
 
-Внедрение `NewsUseCase` в архитектуру приложения и исправление ошибок компиляции в `NewsListScreen.kt` для соответствия подходу из книги.
-
-## User Review Required
-
-> [!IMPORTANT]
-> Я изменю конструкторы `NewsService` и `NewsUseCase`, чтобы они поддерживали внедрение зависимостей (Dependency Injection) вручную через объект `DI`. Это сделает код более тестируемым и гибким.
+Этот план направлен на устранение причин, по которым новости не отображаются на экране: отсутствие разрешения на интернет и ошибки десериализации данных.
 
 ## Proposed Changes
 
-### Shared Module: Сетевой слой и DI
+### Android App
 
-#### [MODIFY] [NewsService.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/api/network/NewsService.kt)
-- Изменить конструктор, чтобы он принимал `NetworkClient`.
-- Убрать внутреннее создание `NetworkClient`.
+#### [MODIFY] [AndroidManifest.xml](file:///C:/Home/work/KMP/androidApp/src/main/AndroidManifest.xml)
+- Добавить разрешение `<uses-permission android:name="android.permission.INTERNET" />` перед тегом `<application>`. Без этого Android блокирует сетевой трафик.
 
-#### [MODIFY] [NewsUseCase.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/api/network/NewsUseCase.kt)
-- Изменить конструктор, чтобы он принимал `NewsService`.
-- Убрать внутреннее создание `NewsService`.
+### Shared Module (Domain Models)
 
-#### [MODIFY] [DI.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/di/DI.kt)
-- Исправить создание `NewsService`.
-- Добавить метод `getNewsUseCase()`, который собирает цепочку: `NetworkClient` -> `NewsService` -> `NewsUseCase`.
+#### [MODIFY] [Source.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/domain/models/Source.kt)
+- Сделать поля `id` и `name` опциональными (`String?`), так как NewsAPI может возвращать `null` для идентификатора источника.
 
----
+#### [MODIFY] [NewsItem.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/domain/models/NewsItem.kt)
+- Сделать поля `title`, `description` и `content` опциональными (`String?`). Это предотвратит падение парсера JSON, если API пришлет неполные данные (что часто случается с `description`).
 
-### Android App: Presentation Layer
+### Android App (UI)
 
-#### [MODIFY] [NewsViewModel.kt](file:///C:/Home/work/KMP/androidApp/src/main/kotlin/com/example/testkmpapp/presentation/news/NewsViewModel.kt)
-- Заменить `DI.getNewsService()` на `DI.getNewsUseCase()`.
-- Обновить `fetchData()`, чтобы он вызывал `useCase.invoke(Unit)`.
-- Учесть, что `useCase.invoke` возвращает `Result<NewsItemsList?>`.
-
-#### [MODIFY] [NewsListScreen.kt](file:///C:/Home/work/KMP/androidApp/src/main/kotlin/com/example/testkmpapp/presentation/news/NewsListScreen.kt)
-- Исправить тип переменной `news` при сборе состояния.
-- Убрать несуществующий аргумент `onClick` при вызове `NewsListView`.
+#### [MODIFY] [NewsListItemView.kt](file:///C:/Home/work/KMP/androidApp/src/main/kotlin/com/example/testkmpapp/presentation/news/NewsListItemView.kt)
+- Обновить использование `item.title` и `item.description`, добавив `.orEmpty()`, так как теперь они могут быть `null`.
 
 ## Verification Plan
 
 ### Automated Tests
-- Анализ всех измененных файлов с помощью `analyze_file` для подтверждения отсутствия синтаксических ошибок.
-- Проверка связей между компонентами.
+- Запуск `analyze_file` для проверки корректности типов после изменений.
 
 ### Manual Verification
-- После исправлений проект должен успешно собираться в Android Studio.
+- Запустить приложение на устройстве/эмуляторе.
+- Убедиться, что список новостей загружается и отображается.

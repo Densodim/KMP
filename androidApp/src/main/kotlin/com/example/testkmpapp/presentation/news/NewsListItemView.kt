@@ -36,13 +36,13 @@ fun NewsListItemView(item: NewsItem, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.width(8.dp))
         Column {
             Text(
-                text = item.title,
+                text = item.title.orEmpty(),
                 style = MaterialTheme.typography.titleSmall,
                 maxLines = 2
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = item.description,
+                text = item.description.orEmpty(),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 3

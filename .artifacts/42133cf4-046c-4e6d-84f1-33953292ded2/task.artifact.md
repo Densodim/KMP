@@ -1,6 +1,5 @@
-- [x] Обновить `libs.versions.toml`
-    - [x] Установить `ksp = "2.3.9"`
-    - [x] Добавить `kotlinx-metadata-jvm`
-- [x] Обновить `androidApp/build.gradle.kts`
-    - [x] Добавить зависимость `ksp(libs.kotlinx.metadata.jvm)`
-- [x] Проверить результат
+- [x] Добавить разрешение на интернет в `AndroidManifest.xml`
+- [x] Исправить модель `Source.kt` (сделать поля nullable)
+- [x] Исправить модель `NewsItem.kt` (сделать поля nullable)
+- [x] Обновить `NewsListItemView.kt` для обработки nullable полей
+- [x] Проверить отсутствие ошибок компиляции

@@ -24,7 +24,6 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    ksp(libs.kotlinx.metadata.jvm)
 
     implementation(libs.compose.foundation)
     implementation(libs.compose.material3)

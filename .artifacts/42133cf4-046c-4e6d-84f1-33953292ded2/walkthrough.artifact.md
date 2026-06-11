@@ -1,30 +1,33 @@
-# Исправление ошибки Hilt Metadata Version
+# Исправление пустого экрана: Интернет и десериализация
 
-Я исправил проблему совместимости Hilt и Kotlin 2.4.0. Ошибка возникала из-за того, что процессор аннотаций Hilt не понимал формат метаданных, генерируемый новым компилятором Kotlin.
+Я внес исправления, которые должны решить проблему пустого экрана при загрузке новостей.
 
-## Что было сделано
+## Что было исправлено
 
-### 1. Согласование версий KSP
-В файле [libs.versions.toml](file:///C:/Home/work/KMP/gradle/libs.versions.toml) я установил версию KSP **2.3.9**. Это последняя стабильная версия, совместимая с Kotlin 2.4.0. Попытка использовать версию 2.4.0 для KSP сейчас некорректна, так как её еще нет в репозиториях.
+### 1. Добавлено разрешение на Интернет
+В файле [AndroidManifest.xml](file:///C:/Home/work/KMP/androidApp/src/main/AndroidManifest.xml) теперь прописано:
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+```
+Без этого разрешения Android блокирует любые попытки приложения выйти в сеть.
 
-### 2. Обновление библиотеки метаданных для Hilt
-Добавлена библиотека `kotlinx-metadata-jvm` версии **0.9.0**. Она содержит исправления для работы с метаданными Kotlin 2.4.0.
+### 2. Смягчение ограничений моделей данных
+Многие поля в ответе от NewsAPI могут приходить как `null` (особенно `description` и `author`).
+- Я обновил [Source.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/domain/models/Source.kt) и [NewsItem.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/domain/models/NewsItem.kt), сделав поля `title`, `description`, `content`, `id` и `name` опциональными (`?`).
+- Это позволит приложению успешно обрабатывать («парсить») JSON-ответ от сервера, даже если в нем отсутствуют некоторые данные.
 
-### 3. Настройка процессора аннотаций
-В [androidApp/build.gradle.kts](file:///C:/Home/work/KMP/androidApp/build.gradle.kts) я добавил эту библиотеку в конфигурацию `ksp`:
+### 3. Обновление UI
+В [NewsListItemView.kt](file:///C:/Home/work/KMP/androidApp/src/main/kotlin/com/example/testkmpapp/presentation/news/NewsListItemView.kt) добавлена обработка `null` для заголовка и описания:
 ```kotlin
-dependencies {
-    // ...
-    ksp(libs.kotlinx.metadata.jvm) // Принудительное обновление парсера метаданных для Hilt
-}
+text = item.title.orEmpty()
+text = item.description.orEmpty()
 ```
 
-> [!IMPORTANT]
-> Теперь Hilt будет использовать обновленный парсер метаданных, что позволит ему корректно генерировать код при использовании Kotlin 2.4.0.
-
 ## Результаты
-- Файлы конфигурации обновлены.
-- Версии инструментов согласованы.
+- Проект успешно проходит статический анализ.
+- Теперь приложение имеет техническую возможность загружать данные и не «падать» при получении неполных данных от NewsAPI.
 
-render_diffs(file:///C:/Home/work/KMP/gradle/libs.versions.toml)
-render_diffs(file:///C:/Home/work/KMP/androidApp/build.gradle.kts)
+render_diffs(file:///C:/Home/work/KMP/androidApp/src/main/AndroidManifest.xml)
+render_diffs(file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/domain/models/Source.kt)
+render_diffs(file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/domain/models/NewsItem.kt)
+render_diffs(file:///C:/Home/work/KMP/androidApp/src/main/kotlin/com/example/testkmpapp/presentation/news/NewsListItemView.kt)
