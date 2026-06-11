@@ -1,5 +1,7 @@
-- [x] Добавить разрешение на интернет в `AndroidManifest.xml`
-- [x] Исправить модель `Source.kt` (сделать поля nullable)
-- [x] Исправить модель `NewsItem.kt` (сделать поля nullable)
-- [x] Обновить `NewsListItemView.kt` для обработки nullable полей
-- [x] Проверить отсутствие ошибок компиляции
+- [x] Доделать `Observer.swift` (исправление типов и реализации)
+- [x] Доделать `NewListVM.swift`
+    - [x] Инициализировать `NewsViewModels`
+    - [x] Реализовать `itemsCollector` для обновления списка новостей
+    - [x] Настроить метод `loadNews` для подписки на Flow
+- [x] Обновить `NewsListView.swift` для работы с новой ViewModel
+- [x] Финальная проверка связей

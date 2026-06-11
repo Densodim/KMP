@@ -6,33 +6,40 @@ struct NewsItemRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if let urlToImage = item.urlToImage, let url = URL(string: urlToImage) {
+            // Изображение
+            if let urlString = item.urlToImage, let url = URL(string: urlString) {
                 AsyncImage(url: url) { image in
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 } placeholder: {
-                    Color.gray.opacity(0.2)
+                    ProgressView()
                 }
                 .frame(height: 180)
                 .clipped()
                 .cornerRadius(8)
             }
 
-            Text(item.title)
+            // Заголовок
+            Text(item.title ?? "Без заголовка")
                 .font(.headline)
                 .lineLimit(2)
 
-            Text(item.description_ as String)
+            // Описание (в Swift 'description' обычно переименовывается в 'description_')
+            Text(item.description_ ?? "")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .lineLimit(3)
 
             HStack {
-                Text(item.author)
+                // Автор
+                Text(item.author ?? "Неизвестный автор")
                     .font(.caption)
                     .foregroundColor(.secondary)
+
                 Spacer()
+
+                // Дата публикации
                 if let publishedAt = item.publishedAt {
                     Text(publishedAt)
                         .font(.caption)

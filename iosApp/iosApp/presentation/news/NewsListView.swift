@@ -2,37 +2,36 @@ import SwiftUI
 import Shared
 
 struct NewsListView: View {
-    @StateObject private var viewModel = NewsViewModel()
+    // Используем нашу новую ViewModel с Observer
+    @StateObject private var viewModel = NewListVM()
 
     var body: some View {
         NavigationView {
-            Group {
-                switch viewModel.state {
-                case .idle:
-                    Color.clear.onAppear { viewModel.fetchData() }
-
-                case .loading:
+            ZStack {
+                if viewModel.isLoading && viewModel.news.isEmpty {
                     ProgressView("Загрузка...")
-
-                case .loaded(let articles):
-                    List(articles, id: \.title) { item in
+                } else if viewModel.news.isEmpty {
+                    VStack {
+                        Text("Нет новостей")
+                        Button("Загрузить") {
+                            viewModel.loadNews()
+                        }
+                        .padding()
+                    }
+                } else {
+                    List(viewModel.news, id: \.title) { item in
                         NewsItemRow(item: item)
                     }
                     .listStyle(.plain)
-
-                case .failed(let message):
-                    VStack(spacing: 16) {
-                        Text("Ошибка: \(message)")
-                            .multilineTextAlignment(.center)
-                            .foregroundColor(.secondary)
-                        Button("Повторить") {
-                            viewModel.fetchData()
-                        }
+                    .refreshable {
+                        viewModel.loadNews()
                     }
-                    .padding()
                 }
             }
             .navigationTitle("Новости")
+            .onAppear {
+                viewModel.loadNews()
+            }
         }
     }
 }
