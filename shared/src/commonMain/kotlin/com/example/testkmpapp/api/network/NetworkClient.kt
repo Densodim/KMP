@@ -20,7 +20,7 @@ enum class Method {
 expect fun createHttpClient(): HttpClient
 
 class NetworkClient(
-    private val networkConfiguration: NetworkConfiguration,
+    private val networkConfiguration: NetworkConfiguration = NetworkConfiguration(),
     val networkConfig: NetworkConfig = NetworkConfig(),
     val httpClient: HttpClient = createHttpClient()
 ) {

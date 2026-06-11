@@ -15,12 +15,12 @@ abstract class BaseUseCase<in T, out R>(
     }
 }
 
-class NewsUseCase(): BaseUseCase<Unit, NewsItemsList?>() {
+class NewsUseCase: BaseUseCase<Unit, NewsItemsList?>() {
     //TODO change DI
 
-    private val newsServise: NewsService = NewsService()
+    private val newsService: NewsService = NewsService()
 
     override suspend fun execute(params: Unit): NewsItemsList? {
-        return newsServise.loadNews()
+        return newsService.loadNews().getOrThrow()
     }
 }

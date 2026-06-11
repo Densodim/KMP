@@ -1,0 +1,5 @@
+- [x] Добавить `@Serializable` в `Source.kt`
+- [x] Добавить `@Serializable` в `NewsItem.kt`
+- [x] Добавить `@Serializable` в `NewsItemsList.kt`
+- [x] Исправить `NewsUseCase.kt` (опечатка и распаковка Result)
+- [x] Проверить отсутствие ошибок компиляции
