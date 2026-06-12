@@ -1,22 +1,30 @@
-# Исправление ViewModel после перехода на Lifecycle
+# Реализация универсального резолвера для iOS
 
-Я исправил ошибки, возникшие при переходе на библиотеку `androidx.lifecycle` и использовании `viewModelScope`.
+Я исправил метод `resolve` в Kotlin и подключил его на стороне iOS. Это позволяет получать зависимости из Koin динамически.
 
 ## Что было сделано
 
-### 1. Очистка BaseViewModel (Shared)
-В файле [BaseViewModel.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/presentation/BaseViewModel.kt) я удалил ручной вызов `scope.cancel()`.
-- **Почему**: `viewModelScope` из библиотеки Lifecycle отменяется автоматически, когда ViewModel очищается. Ручная отмена больше не требуется.
+### 1. Исправление метода resolve в Kotlin
+В файле [Koin.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/di/Koin.kt) я заменил нерабочий код на корректную реализацию с использованием Koin:
 
-### 2. Исправление NewsViewModel (Android)
-В файле [NewsViewModel.kt](file:///C:/Home/work/KMP/androidApp/src/main/kotlin/com/example/testkmpapp/presentation/news/NewsViewModel.kt) устранены следующие проблемы:
-- **Удалена ошибочная инициализация**: Удалена переменная `useCase`, которая создавалась через `NewsUseCase()` без параметров (что приводило к ошибке компиляции). Теперь используется `newsUseCase` из `DI`.
-- **Исправлен тип данных**: В методе `loadNews` теперь правильно извлекается список статей из объекта `NewsItemsList` (`it?.articles.orEmpty()`) перед обновлением потока `_news`.
-- **Использование viewModelScope**: Методы `fetchData` и `loadNews` теперь единообразно используют встроенный `viewModelScope`.
+```kotlin
+fun <T : Any> KoinDIFactory.resolve(clazz: KClass<T>): T? {
+    // Используем экземпляр Koin через KoinDI и метод getOrNull
+    return di.getKoin().getOrNull(clazz)
+}
+```
 
-## Результаты
-- Ошибки компиляции в обоих модулях устранены.
-- Код теперь полностью соответствует правилам работы с современным `androidx.lifecycle`.
+### 2. Подключение в iOS (Swift)
+В файле [NewListVM.swift](file:///C:/Home/work/KMP/iosApp/iosApp/presentation/news/NewListVM.swift) я заменил прямое создание ViewModel на получение через резолвер. Это гарантирует, что `NewsViewModels` будет создана Koin-ом со всеми необходимыми зависимостями (например, `NewsUseCase`).
 
-render_diffs(file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/presentation/BaseViewModel.kt)
-render_diffs(file:///C:/Home/work/KMP/androidApp/src/main/kotlin/com/example/testkmpapp/presentation/news/NewsViewModel.kt)
+```swift
+// Теперь зависимость берется из Koin, а не создается вручную
+private let sharedVM: NewsViewModels = KoinDIFactory.shared.resolve(clazz: NewsViewModels.self)!
+```
+
+## Преимущества
+- **Инъекция зависимостей**: Теперь `NewsViewModels` на iOS получает те же зависимости, что и на Android, через общую конфигурацию Koin.
+- **Гибкость**: Вы можете запрашивать любые классы, зарегистрированные в Koin, без необходимости менять код `KoinDI.kt`.
+
+render_diffs(file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/di/Koin.kt)
+render_diffs(file:///C:/Home/work/KMP/iosApp/iosApp/presentation/news/NewListVM.swift)

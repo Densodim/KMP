@@ -1,32 +1,40 @@
-# Исправление проблемы пустого экрана (Сетевые запросы и модели)
+# Внедрение Koin DI в проект KMP
 
-Этот план направлен на устранение причин, по которым новости не отображаются на экране: отсутствие разрешения на интернет и ошибки десериализации данных.
+Этот план описывает завершение настройки Koin Dependency Injection для обеспечения работы как на Android, так и на iOS, следуя подходу из вашей книги.
+
+## User Review Required
+
+> [!IMPORTANT]
+> В проекте уже присутствует **Hilt** (`@HiltAndroidApp` в `TestKMPApplication`). Если вы решили полностью перейти на **Koin** (как в книге), я рекомендую в дальнейшем убрать Hilt, чтобы не усложнять проект двумя разными системами DI. В рамках этого плана я добавлю инициализацию Koin рядом с Hilt.
 
 ## Proposed Changes
 
+### Shared Module (commonMain)
+
+#### [MODIFY] [Koin.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/di/Koin.kt)
+- Добавить `networkModule` для регистрации сетевых настроек.
+- Создать `viewModelModule` для регистрации `NewsViewModels`.
+- Исправить синтаксис `startKoin`: использовать `modules(allModules)` вместо некорректного `module { listOf(...) }`.
+- Добавить поддержку `KoinAppDeclaration` для специфичных настроек платформ (например, передача `Context` на Android).
+
+#### [MODIFY] [KoinDI.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/di/KoinDI.kt)
+- Сделать класс более удобным для iOS: добавить инъекцию `NewsUseCase`.
+- Убрать `val service2: NewsService = get()`, так как прямой вызов `get()` в конструкторе может привести к падению, если Koin еще не запущен.
+
+#### [MODIFY] [NewsViewModels.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/domain/models/NewsViewModels.kt)
+- Убрать ручное создание `useCase` через старый `DI` объект.
+- Добавить конструктор для инъекции `NewsUseCase` или использовать `KoinComponent`.
+
 ### Android App
 
-#### [MODIFY] [AndroidManifest.xml](file:///C:/Home/work/KMP/androidApp/src/main/AndroidManifest.xml)
-- Добавить разрешение `<uses-permission android:name="android.permission.INTERNET" />` перед тегом `<application>`. Без этого Android блокирует сетевой трафик.
-
-### Shared Module (Domain Models)
-
-#### [MODIFY] [Source.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/domain/models/Source.kt)
-- Сделать поля `id` и `name` опциональными (`String?`), так как NewsAPI может возвращать `null` для идентификатора источника.
-
-#### [MODIFY] [NewsItem.kt](file:///C:/Home/work/KMP/shared/src/commonMain/kotlin/com/example/testkmpapp/domain/models/NewsItem.kt)
-- Сделать поля `title`, `description` и `content` опциональными (`String?`). Это предотвратит падение парсера JSON, если API пришлет неполные данные (что часто случается с `description`).
-
-### Android App (UI)
-
-#### [MODIFY] [NewsListItemView.kt](file:///C:/Home/work/KMP/androidApp/src/main/kotlin/com/example/testkmpapp/presentation/news/NewsListItemView.kt)
-- Обновить использование `item.title` и `item.description`, добавив `.orEmpty()`, так как теперь они могут быть `null`.
+#### [MODIFY] [TestKMPApplication.kt](file:///C:/Home/work/KMP/androidApp/src/main/kotlin/com/example/testkmpapp/TestKMPApplication.kt)
+- Вызвать `initKoin` в методе `onCreate`.
 
 ## Verification Plan
 
 ### Automated Tests
-- Запуск `analyze_file` для проверки корректности типов после изменений.
+- Проверка синтаксиса всех файлов через `analyze_file`.
 
 ### Manual Verification
-- Запустить приложение на устройстве/эмуляторе.
-- Убедиться, что список новостей загружается и отображается.
+- Сборка проекта.
+- Проверка логов (если добавить `print` в инициализацию модулей) для подтверждения успешного запуска Koin.

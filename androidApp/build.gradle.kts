@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    implementation(libs.koin.core)
 
     implementation(libs.compose.foundation)
     implementation(libs.compose.material3)
