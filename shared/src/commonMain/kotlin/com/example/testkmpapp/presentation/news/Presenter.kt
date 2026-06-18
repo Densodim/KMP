@@ -1,13 +1,13 @@
 package com.example.testkmpapp.presentation.news
 
 interface Presenter {
-    var view: View?
+    var view: PresenterView?
 
-    fun attach(view: View)
+    fun attach(view: PresenterView)
 
     fun detach()
 }
-interface View {
+interface PresenterView {
 
     val presenter: Presenter?
 }

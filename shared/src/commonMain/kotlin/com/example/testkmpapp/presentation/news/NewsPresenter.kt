@@ -1,9 +1,9 @@
 package com.example.testkmpapp.presentation.news
 
 class NewsPresenter: Presenter {
-    override var view: View? = null
+    override var view: PresenterView? = null
 
-    override fun attach(view: View) {
+    override fun attach(view: PresenterView) {
         this.view = view
     }
 

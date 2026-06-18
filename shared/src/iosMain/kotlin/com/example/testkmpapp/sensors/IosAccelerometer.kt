@@ -1,9 +1,11 @@
 package com.example.testkmpapp.sensors
 
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.useContents
 import platform.CoreMotion.CMMotionManager
 import platform.Foundation.NSOperationQueue
 
-// iOS implementation: this file must be in iosMain because CoreMotion exists only on Apple platforms.
+@OptIn(ExperimentalForeignApi::class)
 class IosAccelerometer : Accelerometer {
     private val motionManager = CMMotionManager()
 
@@ -19,13 +21,10 @@ class IosAccelerometer : Accelerometer {
         motionManager.accelerometerUpdateInterval = 0.2
         motionManager.startAccelerometerUpdatesToQueue(NSOperationQueue.mainQueue) { data, _ ->
             val acceleration = data?.acceleration ?: return@startAccelerometerUpdatesToQueue
-            onReading(
-                Acceleration(
-                    x = acceleration.x,
-                    y = acceleration.y,
-                    z = acceleration.z,
-                )
-            )
+            val reading = acceleration.useContents {
+                Acceleration(x = x, y = y, z = z)
+            }
+            onReading(reading)
         }
     }
 

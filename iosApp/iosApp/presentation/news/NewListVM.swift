@@ -6,8 +6,7 @@ class NewListVM: ObservableObject {
     @Published var news: [NewsItem] = []
     @Published var isLoading: Bool = false
 
-    // Экземпляр общей ViewModel из Shared модуля через Koin
-    private let sharedVM: NewsViewModels = KoinDIFactory.shared.resolve(clazz: NewsViewModels.self)!
+    private let sharedVM: NewsViewModels = KoinDIFactory.shared.di.newsViewModels
 
     // Флаг, чтобы не подписываться на Flow дважды
     private var isObserving = false

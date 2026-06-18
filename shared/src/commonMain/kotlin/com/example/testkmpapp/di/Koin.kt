@@ -7,7 +7,6 @@ import com.example.testkmpapp.domain.models.NewsViewModels
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
-import kotlin.reflect.KClass
 
 val serviceModule = module {
     single { NetworkClient() }
@@ -38,9 +37,4 @@ object KoinDIFactory {
         initKoin {}
         KoinDI()
     }
-}
-
-
-fun <T : Any> KoinDIFactory.resolve(clazz: KClass<T>): T? {
-    return di.getKoin().getOrNull(clazz)
 }
