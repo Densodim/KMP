@@ -5,27 +5,30 @@ import Shared
 final class NewsViewModel: ObservableObject {
     @Published private(set) var state: NewsListState = .idle
 
-    private let newsService: NewsService
+    private let sharedVM: NewsViewModels = KoinDIFactory.shared.di.newsViewModels
+    private var isObserving = false
 
-    init(newsService: NewsService = DI().getNewsService()) {
-        self.newsService = newsService
+    private lazy var collector: Observer = Observer { [weak self] value in
+        if let list = value as? NewsItemsList {
+            DispatchQueue.main.async {
+                self?.state = .loaded(list.articles as! [NewsItem])
+            }
+        }
     }
 
     func fetchData() {
-        state = .loading
-
-        Task {
-            do {
-                let result = try await newsService.loadNews()
-                if let items = result as? NewsItemsList {
-                    state = .loaded(items.articles as! [NewsItem])
-                } else {
-                    state = .failed("Unexpected response type")
+        if !isObserving {
+            isObserving = true
+            Task {
+                do {
+                    try await sharedVM.newFlow.collect(collector: collector)
+                } catch {
+                    state = .failed(error.localizedDescription)
                 }
-            } catch {
-                state = .failed(error.localizedDescription)
             }
         }
+        state = .loading
+        sharedVM.loadNews()
     }
 }
 
