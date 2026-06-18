@@ -33,8 +33,5 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
 fun initKoin() = initKoin {}
 
 object KoinDIFactory {
-    val di: KoinDI by lazy {
-        initKoin {}
-        KoinDI()
-    }
+    val di: KoinDI by lazy { KoinDI() }
 }
