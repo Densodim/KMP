@@ -18,7 +18,7 @@ abstract class BaseUseCase<in T, out R>(
 class NewsUseCase(private val newsService: NewsService): BaseUseCase<Unit, NewsItemsList?>() {
     //TODO change DI
 
-    override suspend fun execute(params: Unit): NewsItemsList? {
+    override suspend fun execute(params: Unit): NewsItemsList {
         return newsService.loadNews().getOrThrow()
     }
 }
