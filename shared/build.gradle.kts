@@ -2,13 +2,21 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidMultiplatformLibrary)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 kotlin {
+    androidTarget {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
+        }
+    }
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -18,23 +26,7 @@ kotlin {
             isStatic = true
         }
     }
-    
-    androidLibrary {
-       namespace = "com.example.testkmpapp.shared"
-       compileSdk = libs.versions.android.compileSdk.get().toInt()
-       minSdk = libs.versions.android.minSdk.get().toInt()
-    
-       compilerOptions {
-           jvmTarget = JvmTarget.JVM_11
-       }
-       androidResources {
-           enable = true
-       }
-       withHostTest {
-           isIncludeAndroidResources = true
-       }
-    }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
@@ -57,6 +49,9 @@ kotlin {
             implementation(libs.ktor.client.serialization)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.lifecycle)
+            implementation(libs.androiddx.room.runtime)
+            implementation(libs.sqlite.bundled)
+            implementation(libs.sqlite)
             api(libs.koin.core)
         }
         iosMain.dependencies {
@@ -68,6 +63,34 @@ kotlin {
     }
 }
 
+android {
+    namespace = "com.example.testkmpapp.shared"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
+
+    dependencies {
+        debugImplementation(libs.compose.uiTooling)
+    }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
 dependencies {
-    androidRuntimeClasspath(libs.compose.uiTooling)
+    add("kspAndroid", libs.androiddx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androiddx.room.compiler)
+    add("kspIosArm64", libs.androiddx.room.compiler)
 }
