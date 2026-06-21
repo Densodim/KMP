@@ -27,6 +27,8 @@ lifecycle = "2.10.0"
 koin-bom = "4.2.0"
 androiddxRoom = "2.8.4"
 sqlite = "2.6.2"
+kotest = "6.2.1"
+mokkery = "3.2.0"
 
 
 [libraries]
@@ -61,6 +63,7 @@ ktor-client-logging = {module = "io.ktor:ktor-client-logging", version.ref = "kt
 ktor-client-content-negotiation = {module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor"}
 ktor-client-serialization = {module = "io.ktor:ktor-client-serialization", version.ref = "ktor"}
 ktor-serialization-kotlinx-json = {module = "io.ktor:ktor-serialization-kotlinx-json", version.ref="ktor"}
+ktor-client-mock = {module = "io.ktor:ktor-client-mock", version.ref="ktor"}
 kotlinx-metadata-jvm = { module = "org.jetbrains.kotlinx:kotlinx-metadata-jvm", version.ref = "kotlinx-metadata-jvm" }
 lifecycle = {module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle"}
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin-bom"}
@@ -69,6 +72,10 @@ androiddx-room-compiler = { module = "androidx.room:room-compiler", version.ref 
 androiddx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androiddxRoom"}
 sqlite-bundled = {module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite"}
 sqlite = {module = "androidx.sqlite:sqlite", version.ref = "sqlite"}
+kotest-assertions-core = {module = "io.kotest:kotest-assertions-core", version.ref = "kotest"}
+kotest-framework-engine = {module = "io.kotest:kotest-framework-engine", version.ref = "kotest"}
+kotest-runner-junit5 = {module = "io.kotest:kotest-runner-junit5", version.ref = "kotest"}
+
 
 
 [plugins]
@@ -83,4 +90,6 @@ hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 serialization = {id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization"}
 room = {id = "androidx.room", version.ref = "androiddxRoom"}
+kotest = {id = "io.kotest", version.ref = "kotest"}
+mokkery = {id = "dev.mokkery", version.ref = "mokkery"}
 

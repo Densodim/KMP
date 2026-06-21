@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.kotest)
+    alias(libs.plugins.mokkery)
 }
 
 kotlin {
@@ -59,6 +61,12 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.kotest.assertions.core)
+            implementation(libs.kotest.framework.engine)
+            implementation(libs.ktor.client.mock)
+        }
+        androidUnitTest.dependencies {
+            implementation(libs.kotest.runner.junit5)
         }
     }
 }
@@ -93,4 +101,9 @@ dependencies {
     add("kspAndroid", libs.androiddx.room.compiler)
     add("kspIosSimulatorArm64", libs.androiddx.room.compiler)
     add("kspIosArm64", libs.androiddx.room.compiler)
+}
+
+// Kotest на JVM/Android запускается через JUnit Platform (JUnit 5)
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }
