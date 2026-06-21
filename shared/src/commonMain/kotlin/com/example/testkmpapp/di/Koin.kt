@@ -7,7 +7,6 @@ import com.example.testkmpapp.domain.models.NewsViewModels
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
-import kotlin.coroutines.EmptyCoroutineContext.get
 
 val serviceModule = module {
     single { NetworkClient() }
@@ -25,7 +24,7 @@ val vmModule = module {
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
     startKoin {
         appDeclaration()
-        modules(serviceModule, usecaseModule, vmModule)
+        modules(serviceModule, usecaseModule, vmModule, dataModule, platformModule())
     }
 }
 
