@@ -20,7 +20,9 @@ struct NewsListView: View {
                     }
                 } else {
                     List(viewModel.news, id: \.title) { item in
-                        NewsItemRow(item: item)
+                        NewsItemRow(item: item) {
+                            viewModel.onFavoriteClick(item: item)
+                        }
                     }
                     .listStyle(.plain)
                     .refreshable {

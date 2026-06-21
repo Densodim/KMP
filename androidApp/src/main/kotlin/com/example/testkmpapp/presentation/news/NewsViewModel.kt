@@ -29,4 +29,9 @@ class NewsViewModel : ViewModel(), KoinComponent {
             _news.value = it?.articles.orEmpty()
         }
     }
+
+    fun onFavoriteClick(item: NewsItem) {
+        // TODO: логику добавления/удаления из избранного допишем позже
+        println("onFavoriteClick: ${item.title}")
+    }
 }

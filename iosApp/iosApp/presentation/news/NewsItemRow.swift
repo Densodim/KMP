@@ -3,6 +3,7 @@ import Shared
 
 struct NewsItemRow: View {
     let item: NewsItem
+    let onFavoriteClick: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -45,6 +46,13 @@ struct NewsItemRow: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
+
+                // Кнопка "избранное"
+                Button(action: onFavoriteClick) {
+                    Image(systemName: item.isFavorite ? "heart.fill" : "heart")
+                        .foregroundColor(item.isFavorite ? .red : .secondary)
+                }
+                .buttonStyle(.borderless)
             }
         }
         .padding(.vertical, 8)

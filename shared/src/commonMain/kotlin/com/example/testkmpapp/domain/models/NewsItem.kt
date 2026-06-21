@@ -12,5 +12,6 @@ data class NewsItem(
     val url: String? = null,
     val publishedAt: String? = null,
     val content: String? = null,
-    val urlToImage: String? = null
+    val urlToImage: String? = null,
+    val isFavorite: Boolean = false
 )

@@ -12,5 +12,8 @@ fun NewsListScreen(viewModel: NewsViewModel) {
     }
 
     val news by viewModel.news.collectAsState()
-    NewsListView(news)
+    NewsListView(
+        items = news,
+        onFavoriteClick = { viewModel.onFavoriteClick(it) }
+    )
 }

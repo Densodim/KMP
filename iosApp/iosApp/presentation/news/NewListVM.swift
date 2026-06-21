@@ -33,6 +33,10 @@ class NewListVM: ObservableObject {
         sharedVM.loadNews()
     }
 
+    func onFavoriteClick(item: NewsItem) {
+        sharedVM.onFavoriteClick(item: item)
+    }
+
     private func startObserving() {
         Task {
             do {

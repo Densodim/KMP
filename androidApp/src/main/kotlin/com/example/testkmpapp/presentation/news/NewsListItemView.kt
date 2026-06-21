@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +23,11 @@ import coil.compose.AsyncImage
 import com.example.testkmpapp.domain.models.NewsItem
 
 @Composable
-fun NewsListItemView(item: NewsItem, modifier: Modifier = Modifier) {
+fun NewsListItemView(
+    item: NewsItem,
+    onFavoriteClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(
         modifier = modifier.fillMaxWidth().padding(8.dp),
         verticalAlignment = Alignment.Top,
@@ -34,7 +39,7 @@ fun NewsListItemView(item: NewsItem, modifier: Modifier = Modifier) {
             modifier = Modifier.size(80.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = item.title.orEmpty(),
                 style = MaterialTheme.typography.titleSmall,
@@ -52,6 +57,14 @@ fun NewsListItemView(item: NewsItem, modifier: Modifier = Modifier) {
                 text = item.author.orEmpty(),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        IconButton(onClick = onFavoriteClick) {
+            Text(
+                text = if (item.isFavorite) "♥" else "♡",
+                style = MaterialTheme.typography.titleLarge,
+                color = if (item.isFavorite) MaterialTheme.colorScheme.error
+                else MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
