@@ -31,7 +31,14 @@ class NewsViewModel : ViewModel(), KoinComponent {
     }
 
     fun onFavoriteClick(item: NewsItem) {
-        // TODO: логику добавления/удаления из избранного допишем позже
-        println("onFavoriteClick: ${item.title}")
+        // Находим нажатую новость в списке и меняем ей статус isFavorite
+        _news.value = _news.value.map {
+            if (it.title == item.title) {
+                it.copy(isFavorite = !it.isFavorite)
+            } else {
+                it
+            }
+        }
+        println("Favorite toggled for: ${item.title}")
     }
 }

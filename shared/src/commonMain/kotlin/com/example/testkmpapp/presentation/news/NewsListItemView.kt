@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -62,7 +63,7 @@ fun NewsListItemView(
         }
         IconButton(onClick = { onFavoriteClick(item) }) {
             Icon(
-                imageVector = if (item.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                imageVector = if (item.isFavorite) Icons.Filled.Favorite else Icons.Outlined.StarBorder,
                 contentDescription = "favorite",
                 modifier = Modifier.width(50.dp).height(50.dp)
             )
