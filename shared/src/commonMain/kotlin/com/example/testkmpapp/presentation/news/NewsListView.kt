@@ -19,8 +19,7 @@ fun NewsListView(
     onItemClick: (NewsItem) -> Unit = {}
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-        modifier = Modifier.background(MaterialTheme.colorScheme.background)
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
     ) {
         items(items) { item ->
             NewsListItemView(

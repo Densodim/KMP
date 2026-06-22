@@ -3,6 +3,7 @@ package com.example.testkmpapp.presentation.news
 import moe.tlaster.precompose.viewmodel.ViewModel
 import moe.tlaster.precompose.viewmodel.viewModelScope
 import com.example.testkmpapp.domain.models.NewsItem
+import com.example.testkmpapp.domain.models.ScreenConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -16,7 +17,18 @@ class NewsViewModel : ViewModel(), KoinComponent {
     private val _news = MutableStateFlow<List<NewsItem>>(emptyList())
     val news: StateFlow<List<NewsItem>> = _news
 
+    private val _uiConfig = MutableStateFlow<ScreenConfig?>(null)
+    val uiConfig: StateFlow<ScreenConfig?> = _uiConfig
+
     fun fetchData() = viewModelScope.launch {
+        // Имитируем запрос конфига интерфейса с сервера (SDUI)
+        _uiConfig.value = ScreenConfig(
+            title = "Daily Digest",
+            backgroundColor = "#FAF9F6", // Мягкий кремовый
+            appBarColor = "#F0EAD6",      // Цвет "яичная скорлупа"
+            showSearch = true
+        )
+
         val result = newsUseCase.invoke(Unit)
         result.onSuccess {
             _news.value = it?.articles.orEmpty()

@@ -25,12 +25,19 @@ fun App() {
         // Стек экранов
         val backStackEntry by navigator.currentEntry.collectAsState(null)
         
-        // Текущий экран определяется по маршруту (route)
+        // Текущий экран определяется по маршруту
         val currentScreen = Screens.entries.find { screen ->
-            // Для PreCompose проверяем соответствие шаблону маршрута
             backStackEntry?.route?.route?.startsWith(screen.route.substringBefore("{")) ?: false
         } ?: Screens.NewsList
         
+        // Переменная для SDUI заголовка
+        var sduiTitle by remember { mutableStateOf<String?>(null) }
+        
+        // Сбрасываем SDUI заголовок при смене экрана
+        LaunchedEffect(currentScreen) {
+            sduiTitle = null
+        }
+
         // Определяем доступность кнопки назад 
         val canNavigateBack by navigator.canGoBack.collectAsState(false)
 
@@ -38,7 +45,7 @@ fun App() {
             Scaffold(
                 topBar = {
                     AppBar(
-                        title = currentScreen.title,
+                        title = sduiTitle ?: currentScreen.title,
                         canNavigateBack = canNavigateBack,
                         navigateUp = { navigator.goBack() }
                     )
@@ -48,12 +55,18 @@ fun App() {
                     navigator = navigator,
                     initialRoute = Screens.NewsList.route,
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
                         .fillMaxSize()
                         .padding(padding)
                 ) {
                     scene(Screens.NewsList.route) {
                         val viewModel = ViewModelFactory.resolve(Screens.NewsList)
+                        val uiConfig by viewModel.uiConfig.collectAsState()
+                        
+                        // Обновляем заголовок из конфига сервера (SDUI)
+                        LaunchedEffect(uiConfig) {
+                            uiConfig?.title?.let { sduiTitle = it }
+                        }
+
                         NewsListScreen(
                             viewModel = viewModel,
                             onItemClick = { item ->
