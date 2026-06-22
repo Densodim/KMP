@@ -31,10 +31,13 @@ androiddxRoom = "2.8.4"
 sqlite = "2.6.2"
 kotest = "6.2.1"
 mokkery = "3.2.0"
-
+preCompose = "1.6.2"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+precompose = { module = "moe.tlaster:precompose", version.ref = "preCompose" }
+precompose-viewmodel = { module = "moe.tlaster:precompose-viewmodel", version.ref = "preCompose" }
+precompose-koin = { module = "moe.tlaster:precompose-koin", version.ref = "preCompose" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }

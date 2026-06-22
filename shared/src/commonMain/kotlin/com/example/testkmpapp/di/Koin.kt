@@ -4,6 +4,7 @@ import com.example.testkmpapp.api.network.NetworkClient
 import com.example.testkmpapp.api.network.NewsService
 import com.example.testkmpapp.api.network.NewsUseCase
 import com.example.testkmpapp.domain.models.NewsViewModels
+import com.example.testkmpapp.presentation.news.NewsViewModel
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
@@ -19,6 +20,7 @@ val usecaseModule = module {
 
 val vmModule = module {
     factory<NewsViewModels> { NewsViewModels() }
+    factory { NewsViewModel() }
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) {

@@ -1,47 +1,50 @@
 package com.example.testkmpapp
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import org.jetbrains.compose.resources.painterResource
-
-import testkmpapp.shared.generated.resources.Res
-import testkmpapp.shared.generated.resources.compose_multiplatform
+import com.example.testkmpapp.domain.models.NewsItem
+import com.example.testkmpapp.navigation.Screens
+import com.example.testkmpapp.navigation.ViewModelFactory
+import com.example.testkmpapp.presentation.news.NewsDetailScreen
+import com.example.testkmpapp.presentation.news.NewsListScreen
+import com.example.testkmpapp.utils.Coder
+import moe.tlaster.precompose.PreComposeApp
+import moe.tlaster.precompose.navigation.*
 
 @Composable
-@Preview
 fun App() {
-    MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
+    PreComposeApp {
+        val navigator = rememberNavigator()
+        MaterialTheme {
+            NavHost(
+                navigator = navigator,
+                initialRoute = Screens.NewsList.route,
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize()
+            ) {
+                scene(Screens.NewsList.route) {
+                    val viewModel = ViewModelFactory.resolve(Screens.NewsList)
+                    NewsListScreen(
+                        viewModel = viewModel,
+                        onItemClick = { item ->
+                            val json = Coder.encode(NewsItem.serializer(), item)
+                            navigator.navigate("/details/$json")
+                        }
+                    )
+                }
+                scene(Screens.NewsDetails.route) { backStackEntry ->
+                    val jsonStr = backStackEntry.path<String>("item")
+                    if (jsonStr != null) {
+                        val item = Coder.decode(NewsItem.serializer(), jsonStr)
+                        NewsDetailScreen(
+                            item = item,
+                            onBack = { navigator.goBack() }
+                        )
+                    }
                 }
             }
         }

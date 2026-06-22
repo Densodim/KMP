@@ -6,11 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.testkmpapp.presentation.news.NewsListScreen
-import com.example.testkmpapp.presentation.news.NewsPresenter
-import com.example.testkmpapp.presentation.news.NewsViewModel
 import com.example.testkmpapp.presentation.news.Presenter
 import com.example.testkmpapp.presentation.news.PresenterView
+import com.example.testkmpapp.presentation.news.NewsPresenter
 
 import com.example.testkmpapp.service.SameService
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,7 +23,7 @@ class MainActivity : ComponentActivity(), PresenterView {
         SameService().printCoroutineInfo()
 
         setContent {
-            NewsListScreen(NewsViewModel())
+            App()
         }
     }
 

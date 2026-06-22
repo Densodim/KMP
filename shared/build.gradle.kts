@@ -58,6 +58,9 @@ kotlin {
             implementation(libs.coil3.compose)
             implementation(libs.coil3.network.ktor3)
             api(libs.koin.core)
+            api(libs.precompose)
+            api(libs.precompose.viewmodel)
+            api(libs.precompose.koin)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
